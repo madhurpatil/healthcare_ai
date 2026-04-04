@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patients</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <h2>📋 Patient Records</h2>
+    <div>
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="card">
+        <h2>All Patient Records</h2>
+
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Transcription</th>
+                <th>Emergency</th>
+                <th>Alerts</th>
+            </tr>
+
+            {% for r in records %}
+            <tr>
+                <td>{{ r.patient_name }}</td>
+                <td>{{ r.transcription }}</td>
+                <td>
+                    {% if r.emergency %}
+                        <span class="badge danger">YES</span>
+                    {% else %}
+                        <span class="badge safe">NO</span>
+                    {% endif %}
+                </td>
+                <td>{{ r.alerts }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>

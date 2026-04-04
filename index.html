@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Healthcare System</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <h2>🇮🇳 AI Healthcare System</h2>
+    <div>
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/patients">Patients</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="card">
+        <h1>🎙 Medical Transcription & Emergency Detection</h1>
+
+        <input type="text" id="patientName" placeholder="Enter Patient Name">
+        
+        <div class="upload-box">
+            <input type="file" id="audioFile">
+        </div>
+
+        <button onclick="uploadAudio()">Analyze Audio</button>
+    </div>
+
+    <div class="card result-card">
+        <h3>📝 Transcription</h3>
+        <p id="transcription">No data yet...</p>
+
+        <h3>🚨 Emergency Status</h3>
+        <p id="alerts">No alerts</p>
+    </div>
+
+</div>
+
+<script src="/static/js/script.js"></script>
+</body>
+</html>
