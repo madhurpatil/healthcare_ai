@@ -5,20 +5,32 @@ from webdriver_manager.chrome import ChromeDriverManager
 import subprocess
 import time
 import sys
+import requests
 
 print("🚀 Starting Flask app...")
 
 # Start Flask app
 process = subprocess.Popen(
     ["python", "app.py"],
-    stdout=subprocess.PIPE,
-    stderr=subprocess.PIPE
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL
 )
 
-# Wait for server
-time.sleep(8)
+# 🔥 Wait until server is actually ready (NOT just sleep)
+url = "http://127.0.0.1:5000"
+for i in range(15):
+    try:
+        requests.get(url)
+        print("✅ Server is ready")
+        break
+    except:
+        time.sleep(1)
+else:
+    print("❌ Server not starting")
+    process.terminate()
+    sys.exit(1)
 
-# Headless Chrome (Jenkins compatible)
+# Headless Chrome (Jenkins safe)
 options = Options()
 options.add_argument("--headless=new")
 options.add_argument("--no-sandbox")
@@ -31,9 +43,9 @@ try:
     driver = webdriver.Chrome(service=service, options=options)
 
     print("🌐 Opening app...")
-    driver.get("http://127.0.0.1:5000")
+    driver.get(url)
 
-    time.sleep(5)
+    time.sleep(3)
 
     if "Healthcare" in driver.page_source:
         print("✅ Selenium Test Passed")
@@ -45,6 +57,6 @@ try:
     process.terminate()
 
 except Exception as e:
-    print("❌ Selenium Test Failed:", e)
+    print("❌ Selenium Failed:", e)
     process.terminate()
     sys.exit(1)
