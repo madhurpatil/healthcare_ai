@@ -4,34 +4,32 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import subprocess
 import time
+import sys
 
 print("🚀 Starting Flask app...")
 
 # Start Flask app
 process = subprocess.Popen(
     ["python", "app.py"],
-    stdout=subprocess.DEVNULL,
-    stderr=subprocess.DEVNULL
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE
 )
 
-time.sleep(5)
+# Wait for server
+time.sleep(8)
 
-# 🔥 Headless setup (IMPORTANT)
+# Headless Chrome (Jenkins compatible)
 options = Options()
 options.add_argument("--headless=new")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
 options.add_argument("--disable-gpu")
-options.add_argument("--remote-debugging-port=9222")
-
-# 🔥 Force binary location (VERY IMPORTANT)
-options.binary_location = "C:\\Users\\Madhur pramod patil\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe"
 
 service = Service(ChromeDriverManager().install())
 
-driver = webdriver.Chrome(service=service, options=options)
-
 try:
+    driver = webdriver.Chrome(service=service, options=options)
+
     print("🌐 Opening app...")
     driver.get("http://127.0.0.1:5000")
 
@@ -40,12 +38,13 @@ try:
     if "Healthcare" in driver.page_source:
         print("✅ Selenium Test Passed")
     else:
-        print("❌ Page content not found")
+        print("❌ Content not found")
+        sys.exit(1)
+
+    driver.quit()
+    process.terminate()
 
 except Exception as e:
     print("❌ Selenium Test Failed:", e)
-    exit(1)   # 🔥 VERY IMPORTANT FOR JENKINS
-
-finally:
-    driver.quit()
     process.terminate()
+    sys.exit(1)
