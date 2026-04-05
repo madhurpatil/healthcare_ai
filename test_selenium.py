@@ -8,10 +8,8 @@ import requests
 
 print("Starting Flask app...")
 
-# Start Flask
 flask_process = subprocess.Popen(["python", "app.py"])
 
-# Wait until server is actually UP
 def wait_for_server(url, timeout=30):
     for _ in range(timeout):
         try:
@@ -28,7 +26,6 @@ if not wait_for_server("http://127.0.0.1:5000"):
 
 print("Flask started successfully")
 
-# Chrome setup
 options = Options()
 options.binary_location = r"C:\Users\Madhur pramod patil\AppData\Local\Google\Chrome\Application\chrome.exe"
 
@@ -37,7 +34,8 @@ options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
 options.add_argument("--disable-gpu")
 
-service = Service(ChromeDriverManager().install())
+# FORCE correct ChromeDriver version
+service = Service(ChromeDriverManager(driver_version="146.0.7680.178").install())
 
 try:
     driver = webdriver.Chrome(service=service, options=options)
