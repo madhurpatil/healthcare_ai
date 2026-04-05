@@ -1,35 +1,44 @@
-import subprocess
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 import time
-import requests
-import sys
+import subprocess
 
-print("🚀 Starting Flask app...")
+print("Starting Flask app...")
 
-# Start Flask app
-process = subprocess.Popen(
-    ["python", "app.py"],
-    stdout=subprocess.DEVNULL,
-    stderr=subprocess.DEVNULL
-)
+# Start Flask app in background
+flask_process = subprocess.Popen(["python", "app.py"])
 
-# Wait for server
-time.sleep(5)
+# Wait for Flask to start
+time.sleep(10)
 
-url = "http://127.0.0.1:5000"
+# Headless Chrome (Jenkins compatible)
+options = Options()
+options.add_argument("--headless=new")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--disable-gpu")
+
+service = Service(ChromeDriverManager().install())
 
 try:
-    print("🌐 Sending request to app...")
-    response = requests.get(url)
+    driver = webdriver.Chrome(service=service, options=options)
 
-    if response.status_code == 200 and "Healthcare" in response.text:
-        print("✅ Test Passed (App is running)")
+    print("Opening app...")
+    driver.get("http://127.0.0.1:5000")
+
+    time.sleep(5)
+
+    # Strict validation
+    if "Healthcare" in driver.page_source:
+        print("Selenium Test Passed")
     else:
-        print("❌ Test Failed")
-        sys.exit(1)
+        print("Test Failed")
+        exit(1)
 
-except Exception as e:
-    print("❌ Error:", e)
-    sys.exit(1)
+    driver.quit()
 
 finally:
-    process.terminate()
+    flask_process.terminate()
+    print("Flask stopped")
