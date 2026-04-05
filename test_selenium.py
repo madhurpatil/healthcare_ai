@@ -4,17 +4,34 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import subprocess
+import requests
 
 print("Starting Flask app...")
 
-# Start Flask app in background
+# Start Flask
 flask_process = subprocess.Popen(["python", "app.py"])
 
-# Wait for Flask to start
-time.sleep(10)
+# Wait until server is actually UP
+def wait_for_server(url, timeout=30):
+    for _ in range(timeout):
+        try:
+            requests.get(url)
+            return True
+        except:
+            time.sleep(1)
+    return False
 
-# Headless Chrome (Jenkins compatible)
+if not wait_for_server("http://127.0.0.1:5000"):
+    print("Flask failed to start")
+    flask_process.terminate()
+    exit(1)
+
+print("Flask started successfully")
+
+# Chrome setup
 options = Options()
+options.binary_location = r"C:\Users\Madhur pramod patil\AppData\Local\Google\Chrome\Application\chrome.exe"
+
 options.add_argument("--headless=new")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
@@ -30,11 +47,12 @@ try:
 
     time.sleep(5)
 
-    # Strict validation
     if "Healthcare" in driver.page_source:
         print("Selenium Test Passed")
     else:
         print("Test Failed")
+        driver.quit()
+        flask_process.terminate()
         exit(1)
 
     driver.quit()
