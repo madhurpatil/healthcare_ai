@@ -3,7 +3,7 @@ try:
     model = whisper.load_model("base")
     WHISPER_AVAILABLE = True
 except:
-    print("Whisper not installed → fallback mode")
+    print("Whisper not installed - fallback mode")
     WHISPER_AVAILABLE = False
 
 EMERGENCY_KEYWORDS = [
@@ -24,7 +24,7 @@ def transcribe_audio(file_path):
         except Exception as e:
             return f"Error: {str(e)}"
     else:
-        return "patient has chest pain emergency"   # fallback text
+        return "patient has chest pain emergency"
 
 def detect_emergency(text):
     text = text.lower()
