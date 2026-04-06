@@ -15,7 +15,10 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    try:
+        return render_template("index.html")
+    except:
+        return "Healthcare AI Running"
 
 
 @app.route("/upload", methods=["POST"])
