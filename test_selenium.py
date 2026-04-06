@@ -8,34 +8,26 @@ import requests
 
 print("Starting Flask app...")
 
+# Start Flask app
 flask_process = subprocess.Popen(["python", "app.py"])
 
-def wait_for_server(url, timeout=30):
-    for _ in range(timeout):
-        try:
-            requests.get(url)
-            return True
-        except:
-            time.sleep(1)
-    return False
+# Wait until server is ready
+for _ in range(10):
+    try:
+        res = requests.get("http://127.0.0.1:5000")
+        if res.status_code == 200:
+            break
+    except:
+        time.sleep(2)
 
-if not wait_for_server("http://127.0.0.1:5000"):
-    print("Flask failed to start")
-    flask_process.terminate()
-    exit(1)
-
-print("Flask started successfully")
-
+# Headless Chrome
 options = Options()
-options.binary_location = r"C:\Users\Madhur pramod patil\AppData\Local\Google\Chrome\Application\chrome.exe"
-
 options.add_argument("--headless=new")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
 options.add_argument("--disable-gpu")
 
-# FORCE correct ChromeDriver version
-service = Service(ChromeDriverManager(driver_version="146.0.7680.178").install())
+service = Service(ChromeDriverManager().install())
 
 try:
     driver = webdriver.Chrome(service=service, options=options)
@@ -49,8 +41,6 @@ try:
         print("Selenium Test Passed")
     else:
         print("Test Failed")
-        driver.quit()
-        flask_process.terminate()
         exit(1)
 
     driver.quit()
